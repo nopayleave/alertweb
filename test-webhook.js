@@ -6,11 +6,14 @@ const url = process.argv[2] || 'http://localhost:3000/api/webhook';
 async function testWebhook() {
   console.log(`Testing webhook at: ${url}`);
   
+  // Generate random price to make it more realistic
+  const randomPrice = Math.floor(Math.random() * 1000) + 60000;
+  
   const testData = {
     symbol: "BTCUSD",
     signal: "Bullish",
     condition: "HA > 0",
-    price: 68500.25,
+    price: randomPrice,
     time: new Date().toISOString()
   };
   
@@ -35,8 +38,15 @@ async function testWebhook() {
     
     const data = await response.json();
     console.log('Response:', JSON.stringify(data, null, 2));
+    
+    if (data.success) {
+      console.log('✅ Webhook test successful!');
+      console.log('Alert saved with ID:', data.data.id);
+    } else {
+      console.error('❌ Webhook test failed:', data.error);
+    }
   } catch (error) {
-    console.error('Error testing webhook:', error);
+    console.error('❌ Error testing webhook:', error);
   }
 }
 

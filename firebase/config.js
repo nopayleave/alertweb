@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyD-axuwiqJYkBCHO7l2s9RH2YVfbtJtrS4",
   authDomain: "alertwebdb.firebaseapp.com",
   projectId: "alertwebdb",
-  storageBucket: "alertwebdb.firebasestorage.app",
+  storageBucket: "alertwebdb.appspot.com",
   messagingSenderId: "121983308277",
   appId: "1:121983308277:web:b84b0bbb13e34f6a3c90bc",
   measurementId: "G-7J5B5FCKFX"

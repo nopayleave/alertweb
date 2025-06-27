@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [clearing, setClearing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSampleData, setIsSampleData] = useState<boolean>(true);
 
   // Effect to get the current URL for the webhook
   useEffect(() => {
@@ -43,11 +44,13 @@ const App: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const fetchedAlerts = await fetchAlerts();
+      const result = await fetchAlerts();
       
-      if (fetchedAlerts.length > 0) {
-        setAlerts(fetchedAlerts);
+      if (result.alerts.length > 0) {
+        setAlerts(result.alerts);
       }
+      
+      setIsSampleData(result.isSampleData);
     } catch (err) {
       setError('Failed to fetch alerts');
       console.error('Error fetching alerts:', err);
@@ -188,6 +191,12 @@ const App: React.FC = () => {
           {error && (
             <div className="bg-red-500 bg-opacity-20 border border-red-500 text-white p-4 rounded mb-4">
               {error}
+            </div>
+          )}
+          
+          {isSampleData && (
+            <div className="bg-yellow-500 bg-opacity-20 border border-yellow-500 text-white p-4 rounded mb-4">
+              <strong>Note:</strong> Displaying sample data. No real alerts have been received yet. Use the webhook simulator below to test or configure TradingView to send real alerts.
             </div>
           )}
           

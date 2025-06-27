@@ -1,7 +1,7 @@
 import { Alert, AlertAction } from '../types';
 
 // Function to fetch alerts from our API
-export async function fetchAlerts(): Promise<Alert[]> {
+export async function fetchAlerts(): Promise<{alerts: Alert[], isSampleData: boolean}> {
   try {
     const response = await fetch('/api/alerts');
     const data = await response.json();
@@ -10,7 +10,7 @@ export async function fetchAlerts(): Promise<Alert[]> {
       throw new Error('Failed to fetch alerts');
     }
     
-    return data.data.map((alert: any) => ({
+    const alerts = data.data.map((alert: any) => ({
       ...alert,
       // Convert timestamp strings to Date objects
       timestamp: alert.timestamp ? new Date(alert.timestamp) : new Date(),
@@ -19,9 +19,17 @@ export async function fetchAlerts(): Promise<Alert[]> {
       // Ensure action is of type AlertAction
       action: alert.action === 'BUY' ? AlertAction.BUY : AlertAction.SELL
     }));
+    
+    return {
+      alerts,
+      isSampleData: data.isSampleData || false
+    };
   } catch (error) {
     console.error('Error fetching alerts:', error);
-    return [];
+    return {
+      alerts: [],
+      isSampleData: true
+    };
   }
 }
 

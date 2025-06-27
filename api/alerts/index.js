@@ -23,11 +23,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Fetching alerts from Firebase...');
+    
     // Get all alerts from Firebase
     const alerts = await getAlerts();
     
+    console.log(`Retrieved ${alerts ? alerts.length : 0} alerts from Firebase`);
+    
     // If no alerts, return sample data
     if (!alerts || alerts.length === 0) {
+      console.log('No alerts found, returning sample data');
+      
       const sampleAlerts = [
         {
           id: 'sample-1',
@@ -36,6 +42,7 @@ export default async function handler(req, res) {
           action: 'BUY',
           timestamp: new Date(),
           message: 'HA > 0',
+          isSampleData: true
         },
         {
           id: 'sample-2',
@@ -44,25 +51,29 @@ export default async function handler(req, res) {
           action: 'SELL',
           timestamp: new Date(Date.now() - 60000 * 5),
           message: 'HA < 0',
+          isSampleData: true
         }
       ];
       
       return res.status(200).json({ 
         success: true,
-        data: sampleAlerts
+        data: sampleAlerts,
+        isSampleData: true
       });
     }
     
     // Return the alerts
     return res.status(200).json({ 
       success: true,
-      data: alerts
+      data: alerts,
+      isSampleData: false
     });
   } catch (error) {
     console.error('Error fetching alerts:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to fetch alerts' 
+      error: 'Failed to fetch alerts',
+      errorDetails: error.toString()
     });
   }
 } 
