@@ -25,6 +25,10 @@
       "dest": "/api/test/index.js"
     },
     {
+      "src": "/api/test-page",
+      "dest": "/api/test-page.html"
+    },
+    {
       "handle": "filesystem"
     },
     {
@@ -32,5 +36,4 @@
       "dest": "/index.html"
     }
   ]
-} 
 } 
