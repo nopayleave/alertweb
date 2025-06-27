@@ -1,5 +1,4 @@
 // API endpoint to fetch alerts
-import { getAlerts } from '../store';
 
 // Vercel serverless function handler
 export default async function handler(req, res) {
@@ -23,13 +22,30 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Get all alerts from the store
-    const alerts = getAlerts();
+    // Return sample alerts for now
+    const sampleAlerts = [
+      {
+        id: 'sample-1',
+        ticker: 'BTCUSD',
+        price: 68500.25,
+        action: 'BUY',
+        timestamp: new Date(),
+        message: 'HA > 0',
+      },
+      {
+        id: 'sample-2',
+        ticker: 'ETHUSD',
+        price: 3650.45,
+        action: 'SELL',
+        timestamp: new Date(Date.now() - 60000 * 5),
+        message: 'HA < 0',
+      }
+    ];
     
     // Return the alerts
     return res.status(200).json({ 
       success: true,
-      data: alerts
+      data: sampleAlerts
     });
   } catch (error) {
     console.error('Error fetching alerts:', error);
