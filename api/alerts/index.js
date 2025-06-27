@@ -1,4 +1,5 @@
 // API endpoint to fetch alerts
+import { getAlerts } from '../../firebase/alerts';
 
 // Vercel serverless function handler
 export default async function handler(req, res) {
@@ -22,30 +23,40 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Return sample alerts for now
-    const sampleAlerts = [
-      {
-        id: 'sample-1',
-        ticker: 'BTCUSD',
-        price: 68500.25,
-        action: 'BUY',
-        timestamp: new Date(),
-        message: 'HA > 0',
-      },
-      {
-        id: 'sample-2',
-        ticker: 'ETHUSD',
-        price: 3650.45,
-        action: 'SELL',
-        timestamp: new Date(Date.now() - 60000 * 5),
-        message: 'HA < 0',
-      }
-    ];
+    // Get all alerts from Firebase
+    const alerts = await getAlerts();
+    
+    // If no alerts, return sample data
+    if (!alerts || alerts.length === 0) {
+      const sampleAlerts = [
+        {
+          id: 'sample-1',
+          ticker: 'BTCUSD',
+          price: 68500.25,
+          action: 'BUY',
+          timestamp: new Date(),
+          message: 'HA > 0',
+        },
+        {
+          id: 'sample-2',
+          ticker: 'ETHUSD',
+          price: 3650.45,
+          action: 'SELL',
+          timestamp: new Date(Date.now() - 60000 * 5),
+          message: 'HA < 0',
+        }
+      ];
+      
+      return res.status(200).json({ 
+        success: true,
+        data: sampleAlerts
+      });
+    }
     
     // Return the alerts
     return res.status(200).json({ 
       success: true,
-      data: sampleAlerts
+      data: alerts
     });
   } catch (error) {
     console.error('Error fetching alerts:', error);

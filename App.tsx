@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Alert, AlertAction } from './types';
 import AlertTable from './components/AlertTable';
 import WebhookSimulator from './components/WebhookSimulator';
-import { fetchAlerts } from './utils/api';
+import { fetchAlerts, clearAlerts } from './utils/api';
 
 const initialAlerts: Alert[] = [
   {
@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
   const [webhookUrl, setWebhookUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [clearing, setClearing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Effect to get the current URL for the webhook
@@ -52,6 +53,24 @@ const App: React.FC = () => {
       console.error('Error fetching alerts:', err);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  // Function to clear all alerts
+  const handleClearAlerts = useCallback(async () => {
+    try {
+      setClearing(true);
+      setError(null);
+      const success = await clearAlerts();
+      
+      if (success) {
+        setAlerts([]);
+      }
+    } catch (err) {
+      setError('Failed to clear alerts');
+      console.error('Error clearing alerts:', err);
+    } finally {
+      setClearing(false);
     }
   }, []);
 
@@ -148,13 +167,22 @@ const App: React.FC = () => {
           
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-white">Live Alerts</h2>
-            <button 
-              onClick={loadAlerts}
-              disabled={loading}
-              className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-50"
-            >
-              {loading ? 'Loading...' : 'Refresh Alerts'}
-            </button>
+            <div className="flex space-x-2">
+              <button 
+                onClick={loadAlerts}
+                disabled={loading}
+                className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-50"
+              >
+                {loading ? 'Loading...' : 'Refresh Alerts'}
+              </button>
+              <button 
+                onClick={handleClearAlerts}
+                disabled={clearing}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-50"
+              >
+                {clearing ? 'Clearing...' : 'Clear Alerts'}
+              </button>
+            </div>
           </div>
           
           {error && (

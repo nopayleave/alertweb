@@ -12,7 +12,12 @@ export async function fetchAlerts(): Promise<Alert[]> {
     
     return data.data.map((alert: any) => ({
       ...alert,
-      timestamp: new Date(alert.timestamp) // Convert timestamp string back to Date object
+      // Convert timestamp strings to Date objects
+      timestamp: alert.timestamp ? new Date(alert.timestamp) : new Date(),
+      createdAt: alert.createdAt ? new Date(alert.createdAt) : new Date(),
+      updatedAt: alert.updatedAt ? new Date(alert.updatedAt) : new Date(),
+      // Ensure action is of type AlertAction
+      action: alert.action === 'BUY' ? AlertAction.BUY : AlertAction.SELL
     }));
   } catch (error) {
     console.error('Error fetching alerts:', error);
@@ -36,5 +41,28 @@ export function formatTradingViewAlert(data: any): Alert | null {
   } catch (error) {
     console.error('Error formatting TradingView alert:', error);
     return null;
+  }
+}
+
+// Function to clear all alerts (for testing)
+export async function clearAlerts(): Promise<boolean> {
+  try {
+    const response = await fetch('/api/clear', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('Failed to clear alerts');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error clearing alerts:', error);
+    return false;
   }
 } 

@@ -21,6 +21,10 @@
       "dest": "/api/alerts/index.js"
     },
     {
+      "src": "/api/clear",
+      "dest": "/api/clear/index.js"
+    },
+    {
       "src": "/api/test",
       "dest": "/api/test/index.js"
     },

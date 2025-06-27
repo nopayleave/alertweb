@@ -1,4 +1,5 @@
 // This is a serverless function that will handle incoming webhook requests from TradingView
+import { addAlert } from '../../firebase/alerts';
 
 // Vercel serverless function handler
 export default async function handler(req, res) {
@@ -28,11 +29,27 @@ export default async function handler(req, res) {
     // Log the received data (for debugging)
     console.log('Received TradingView alert:', alertData);
     
+    // Process the TradingView alert data
+    // Format from the Pine Script:
+    // {"symbol": "BTCUSD", "signal": "Bullish", "condition": "HA > 0", "price": 68500.25, "time": "1234567890"}
+    
+    // Convert the alert data to our application format
+    const processedAlert = {
+      ticker: alertData.symbol?.toUpperCase() || 'UNKNOWN',
+      price: parseFloat(alertData.price) || 0,
+      action: alertData.signal === 'Bullish' ? 'BUY' : 'SELL',
+      timestamp: new Date(),
+      message: alertData.condition || '',
+    };
+    
+    // Store the alert in Firebase
+    const savedAlert = await addAlert(processedAlert);
+    
     // Send a successful response back to TradingView
     return res.status(200).json({ 
       success: true, 
       message: 'Webhook received successfully',
-      data: alertData
+      data: savedAlert
     });
   } catch (error) {
     console.error('Error processing webhook:', error);
