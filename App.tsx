@@ -24,6 +24,15 @@ const initialAlerts: Alert[] = [
 
 const App: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
+  const [webhookUrl, setWebhookUrl] = useState<string>('');
+
+  // Effect to get the current URL for the webhook
+  useEffect(() => {
+    // Get the base URL of the deployed application
+    const baseUrl = window.location.origin;
+    // Set the webhook URL to the API endpoint
+    setWebhookUrl(`${baseUrl}/api/webhook`);
+  }, []);
 
   const handleNewAlert = useCallback((newAlert: Alert) => {
     setAlerts(prevAlerts => {
@@ -78,13 +87,40 @@ const App: React.FC = () => {
         </header>
         
         <main>
+          {/* Display the webhook URL for TradingView integration */}
+          <div className="bg-surface rounded-lg shadow-lg p-6 border border-overlay mb-8">
+            <h2 className="text-xl font-bold text-white mb-2">Webhook URL</h2>
+            <p className="text-sm text-subtle mb-6">
+              Sends a POST request to your specified URL when your alert triggers.
+            </p>
+            <div className="relative">
+              <input
+                type="text"
+                value={webhookUrl}
+                readOnly
+                className="w-full bg-base border border-overlay rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary transition-colors pr-10"
+              />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(webhookUrl);
+                  alert('Webhook URL copied to clipboard!');
+                }}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-subtle hover:text-white"
+                title="Copy to clipboard"
+              >
+                📋
+              </button>
+            </div>
+            {!webhookUrl && <p className="text-red-500 mt-2">A Webhook URL is required</p>}
+          </div>
+          
           <WebhookSimulator onNewAlert={handleNewAlert} />
           <AlertTable alerts={alerts} />
         </main>
 
         <footer className="text-center mt-12 text-subtle text-xs">
           <p>&copy; {new Date().getFullYear()} Live Alert Dashboard. All rights reserved.</p>
-          <p className="mt-1">This is a demo application. Data is simulated via the form above.</p>
+          <p className="mt-1">Configure your TradingView alerts to send webhooks to the URL above.</p>
         </footer>
       </div>
     </div>
