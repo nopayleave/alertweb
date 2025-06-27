@@ -8,8 +8,8 @@ interface WebhookSimulatorProps {
 const WebhookSimulator: React.FC<WebhookSimulatorProps> = ({ onNewAlert }) => {
   const [ticker, setTicker] = useState('BTCUSD');
   const [price, setPrice] = useState('68500.25');
-  const [action, setAction] = useState<AlertAction>(AlertAction.BUY);
-  const [message, setMessage] = useState('Long signal on 1H chart, RSI crossover');
+  const [signal, setSignal] = useState<'Bullish' | 'Bearish'>('Bullish');
+  const [condition, setCondition] = useState('HA > 0');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,15 +19,16 @@ const WebhookSimulator: React.FC<WebhookSimulatorProps> = ({ onNewAlert }) => {
       id: new Date().toISOString() + Math.random(),
       ticker: ticker.toUpperCase(),
       price: parseFloat(price),
-      action,
+      action: signal === 'Bullish' ? AlertAction.BUY : AlertAction.SELL,
       timestamp: new Date(),
-      message,
+      message: condition,
     };
     onNewAlert(newAlert);
     
     // Slightly randomize for next submission to make demoing easier
     setPrice((p) => (parseFloat(p) + (Math.random() * 200 - 100)).toFixed(2));
-    setAction(prev => prev === AlertAction.BUY ? AlertAction.SELL : AlertAction.BUY);
+    setSignal(prev => prev === 'Bullish' ? 'Bearish' : 'Bullish');
+    setCondition(prev => prev === 'HA > 0' ? 'HA < 0' : 'HA > 0');
   };
 
   return (
@@ -38,7 +39,7 @@ const WebhookSimulator: React.FC<WebhookSimulatorProps> = ({ onNewAlert }) => {
       </p>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
         <div className="flex flex-col">
-          <label htmlFor="ticker" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Ticker</label>
+          <label htmlFor="ticker" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Symbol</label>
           <input
             id="ticker"
             type="text"
@@ -61,27 +62,26 @@ const WebhookSimulator: React.FC<WebhookSimulatorProps> = ({ onNewAlert }) => {
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor="action" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Action</label>
+          <label htmlFor="signal" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Signal</label>
           <select
-            id="action"
-            value={action}
-            onChange={(e) => setAction(e.target.value as AlertAction)}
+            id="signal"
+            value={signal}
+            onChange={(e) => setSignal(e.target.value as 'Bullish' | 'Bearish')}
             className="bg-base border border-overlay rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary transition-colors appearance-none"
              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236a6f8f' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
           >
-            <option value={AlertAction.BUY}>BUY</option>
-            <option value={AlertAction.SELL}>SELL</option>
+            <option value="Bullish">Bullish</option>
+            <option value="Bearish">Bearish</option>
           </select>
         </div>
         <div className="flex flex-col md:col-span-2 lg:col-span-1">
-          <label htmlFor="message" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Message</label>
+          <label htmlFor="condition" className="text-xs font-bold text-subtle mb-1 uppercase tracking-wider">Condition</label>
           <input
-            id="message"
+            id="condition"
             type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
             className="bg-base border border-overlay rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-            placeholder="e.g. {{plot_0}}"
             required
           />
         </div>

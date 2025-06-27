@@ -13,10 +13,11 @@ You can copy this URL directly from the application interface.
 
 ## Step 2: Create an Alert in TradingView
 
-1. Open TradingView and navigate to the chart you want to set an alert on
+1. Open TradingView and navigate to the chart with your "Webhook Alert" indicator
 2. Click on the "Alerts" button (bell icon) in the right panel
 3. Click "Create Alert"
-4. Configure your alert conditions (price, indicator, etc.)
+4. Set the condition to use your "Webhook Alert" indicator
+5. Choose the "Once Per Bar Close" option
 
 ## Step 3: Configure the Webhook
 
@@ -25,30 +26,36 @@ In the alert creation dialog:
 1. Scroll down to the "Notifications" section
 2. Check the "Webhook URL" option
 3. Paste your webhook URL from Step 1
-4. In the "Message" field, format your alert data as JSON:
+4. Make sure "Alert() function calls only" is selected
 
+Your Pine Script already formats the alert message correctly with this JSON structure:
 ```json
 {
-  "ticker": "{{ticker}}",
-  "price": {{close}},
-  "action": "BUY",
-  "message": "Your alert message here"
+  "symbol": "BTCUSD",
+  "signal": "Bullish",
+  "condition": "HA > 0",
+  "price": 68500.25,
+  "time": "1234567890"
 }
 ```
 
-You can customize this JSON with any TradingView variables:
-- `{{ticker}}` - The symbol name
-- `{{close}}` - The current price
-- `{{volume}}` - The current volume
-- `{{time}}` - The current bar time
-- `{{timenow}}` - The current time
-- `{{plot_0}}`, `{{plot_1}}`, etc. - Values from your indicators
-
-For the "action" field, you can use "BUY" or "SELL" based on your alert condition.
-
 ## Step 4: Save Your Alert
 
-Click "Create" to save your alert. Now, whenever this alert triggers, TradingView will send a webhook to your application with the formatted data.
+Click "Create" to save your alert. Now, whenever your indicator triggers an alert, TradingView will send a webhook to your application with the formatted data.
+
+## Understanding Your Pine Script Alert Messages
+
+Your Pine Script sends two types of alerts:
+
+1. **Bullish Alert**: When Heikin-Ashi value is positive (HA > 0)
+   ```json
+   {"symbol": "SYMBOL", "signal": "Bullish", "condition": "HA > 0", "price": PRICE, "time": "TIME"}
+   ```
+
+2. **Bearish Alert**: When Heikin-Ashi value is negative (HA < 0)
+   ```json
+   {"symbol": "SYMBOL", "signal": "Bearish", "condition": "HA < 0", "price": PRICE, "time": "TIME"}
+   ```
 
 ## Testing Your Webhook
 
@@ -59,8 +66,9 @@ You can use the built-in Webhook Simulator in the application to test how alerts
 If your alerts aren't showing up:
 
 1. Verify your webhook URL is correct
-2. Check that your JSON format in the TradingView message field is valid
-3. Make sure your Vercel deployment is running properly
-4. Check the browser console for any errors
+2. Ensure "Alert() function calls only" is selected
+3. Check that your Vercel deployment is running properly
+4. Look at the Vercel function logs for any errors
+5. Check the browser console for any errors
 
 Remember that TradingView free accounts have limitations on the number of alerts you can create. 

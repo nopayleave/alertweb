@@ -16,15 +16,15 @@ export async function fetchAlerts(): Promise<Alert[]> {
 // Function to format TradingView webhook data into our Alert type
 export function formatTradingViewAlert(data: any): Alert | null {
   try {
-    // TradingView sends data in various formats depending on how you set it up
-    // This is a basic example - you'll need to adjust based on your actual TradingView alert message format
+    // Format from the Pine Script:
+    // {"symbol": "BTCUSD", "signal": "Bullish", "condition": "HA > 0", "price": 68500.25, "time": "1234567890"}
     return {
       id: new Date().toISOString() + Math.random(),
-      ticker: data.ticker?.toUpperCase() || 'UNKNOWN',
+      ticker: data.symbol?.toUpperCase() || 'UNKNOWN',
       price: parseFloat(data.price) || 0,
-      action: data.action === 'BUY' ? AlertAction.BUY : AlertAction.SELL,
+      action: data.signal === 'Bullish' ? AlertAction.BUY : AlertAction.SELL,
       timestamp: new Date(),
-      message: data.message || '',
+      message: data.condition || '',
     };
   } catch (error) {
     console.error('Error formatting TradingView alert:', error);
