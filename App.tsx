@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Alert, AlertAction } from './types';
 import AlertTable from './components/AlertTable';
 import WebhookSimulator from './components/WebhookSimulator';
+import { fetchAlerts } from './utils/api';
 
 const initialAlerts: Alert[] = [
   {
@@ -25,6 +26,8 @@ const initialAlerts: Alert[] = [
 const App: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
   const [webhookUrl, setWebhookUrl] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Effect to get the current URL for the webhook
   useEffect(() => {
@@ -33,6 +36,35 @@ const App: React.FC = () => {
     // Set the webhook URL to the API endpoint
     setWebhookUrl(`${baseUrl}/api/webhook`);
   }, []);
+
+  // Function to fetch alerts from the API
+  const loadAlerts = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedAlerts = await fetchAlerts();
+      
+      if (fetchedAlerts.length > 0) {
+        setAlerts(fetchedAlerts);
+      }
+    } catch (err) {
+      setError('Failed to fetch alerts');
+      console.error('Error fetching alerts:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch alerts when the component mounts
+  useEffect(() => {
+    loadAlerts();
+    
+    // Set up polling to fetch alerts every 30 seconds
+    const intervalId = setInterval(loadAlerts, 30000);
+    
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, [loadAlerts]);
 
   const handleNewAlert = useCallback((newAlert: Alert) => {
     setAlerts(prevAlerts => {
@@ -113,6 +145,23 @@ const App: React.FC = () => {
             </div>
             {!webhookUrl && <p className="text-red-500 mt-2">A Webhook URL is required</p>}
           </div>
+          
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-white">Live Alerts</h2>
+            <button 
+              onClick={loadAlerts}
+              disabled={loading}
+              className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-50"
+            >
+              {loading ? 'Loading...' : 'Refresh Alerts'}
+            </button>
+          </div>
+          
+          {error && (
+            <div className="bg-red-500 bg-opacity-20 border border-red-500 text-white p-4 rounded mb-4">
+              {error}
+            </div>
+          )}
           
           <WebhookSimulator onNewAlert={handleNewAlert} />
           <AlertTable alerts={alerts} />

@@ -43,6 +43,33 @@ Your Pine Script already formats the alert message correctly with this JSON stru
 
 Click "Create" to save your alert. Now, whenever your indicator triggers an alert, TradingView will send a webhook to your application with the formatted data.
 
+## Using TradingView Alert Lists
+
+TradingView allows you to create alerts for multiple symbols using alert lists. Here's how to set it up:
+
+1. **Create an Alert List**:
+   - Go to the "Alerts" tab in TradingView
+   - Click "Create Alert List"
+   - Name your list (e.g., "Crypto Watchlist" or "Stock Scanner")
+   - Add the symbols you want to monitor
+
+2. **Create Alerts for the List**:
+   - Select your alert list
+   - Click "Create Alert"
+   - Choose your "Webhook Alert" indicator
+   - Configure the alert conditions as described above
+   - In the "Symbol" dropdown, select "Alert List: [Your List Name]"
+
+3. **Configure Webhook for Each Symbol**:
+   - The webhook will be triggered for each symbol in the list that meets your alert conditions
+   - Each alert will contain the specific symbol that triggered it
+
+4. **View Alerts in SimpleHook**:
+   - Your SimpleHook application will automatically display all alerts received
+   - Alerts are grouped by symbol, with the most recent alert for each symbol shown at the top
+   - The application refreshes automatically every 30 seconds to show new alerts
+   - You can also click the "Refresh Alerts" button to manually update
+
 ## Understanding Your Pine Script Alert Messages
 
 Your Pine Script sends two types of alerts:

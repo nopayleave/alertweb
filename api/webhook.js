@@ -1,4 +1,6 @@
 // This is a serverless function that will handle incoming webhook requests from TradingView
+import { addAlert } from './store';
+
 export default async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
@@ -28,10 +30,8 @@ export default async function handler(req, res) {
     
     console.log('Processed alert:', processedAlert);
     
-    // In a real-world scenario, you would:
-    // 1. Store this alert in a database
-    // 2. Notify connected clients via WebSockets
-    // 3. Potentially trigger other actions
+    // Store the alert
+    addAlert(processedAlert);
     
     // Send a successful response back to TradingView
     return res.status(200).json({ 

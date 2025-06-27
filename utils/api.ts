@@ -3,10 +3,17 @@ import { Alert, AlertAction } from '../types';
 // Function to fetch alerts from our API
 export async function fetchAlerts(): Promise<Alert[]> {
   try {
-    // In a real implementation, you would fetch from your API
-    // For now, we'll return an empty array as this would be populated by real data
-    // from the webhook endpoint
-    return [];
+    const response = await fetch('/api/alerts');
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error('Failed to fetch alerts');
+    }
+    
+    return data.data.map((alert: any) => ({
+      ...alert,
+      timestamp: new Date(alert.timestamp) // Convert timestamp string back to Date object
+    }));
   } catch (error) {
     console.error('Error fetching alerts:', error);
     return [];
