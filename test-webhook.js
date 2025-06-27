@@ -15,6 +15,8 @@ async function testWebhook() {
   };
   
   try {
+    console.log('Sending data:', JSON.stringify(testData, null, 2));
+    
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -23,7 +25,11 @@ async function testWebhook() {
       body: JSON.stringify(testData)
     });
     
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     

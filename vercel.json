@@ -1,19 +1,28 @@
 {
   "version": 2,
-  "functions": {
-    "api/*.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "routes": [
+  "builds": [
     {
-      "src": "/api/test\\.html",
-      "dest": "/api/test.html"
+      "src": "api/*/index.js",
+      "use": "@vercel/node"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook/index.js"
+    },
+    {
+      "src": "/api/alerts",
+      "dest": "/api/alerts/index.js"
+    },
+    {
+      "src": "/api/test",
+      "dest": "/api/test/index.js"
     },
     {
       "handle": "filesystem"
@@ -23,4 +32,5 @@
       "dest": "/index.html"
     }
   ]
+} 
 } 
