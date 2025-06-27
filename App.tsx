@@ -4,29 +4,10 @@ import AlertTable from './components/AlertTable';
 import WebhookSimulator from './components/WebhookSimulator';
 import { fetchAlerts, clearAlerts } from './utils/api';
 
-const initialAlerts: Alert[] = [
-  {
-    id: 'initial-2',
-    ticker: 'ETHUSD',
-    price: 3650.45,
-    action: AlertAction.SELL,
-    timestamp: new Date(Date.now() - 60000 * 5),
-    message: 'Bearish divergence on 4H MACD',
-  },
-  {
-    id: 'initial-1',
-    ticker: 'BTCUSD',
-    price: 67100.00,
-    action: AlertAction.BUY,
-    timestamp: new Date(Date.now() - 60000 * 10),
-    message: 'Breakout above resistance confirmed',
-  },
-];
-
 const App: React.FC = () => {
-  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [webhookUrl, setWebhookUrl] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [clearing, setClearing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isSampleData, setIsSampleData] = useState<boolean>(true);
@@ -46,10 +27,7 @@ const App: React.FC = () => {
       setError(null);
       const result = await fetchAlerts();
       
-      if (result.alerts.length > 0) {
-        setAlerts(result.alerts);
-      }
-      
+      setAlerts(result.alerts);
       setIsSampleData(result.isSampleData);
     } catch (err) {
       setError('Failed to fetch alerts');
@@ -200,8 +178,19 @@ const App: React.FC = () => {
             </div>
           )}
           
+          {loading && alerts.length === 0 ? (
+            <div className="bg-surface rounded-lg shadow-lg p-6 border border-overlay mb-4">
+              <p className="text-center text-subtle">Loading alerts...</p>
+            </div>
+          ) : alerts.length === 0 ? (
+            <div className="bg-surface rounded-lg shadow-lg p-6 border border-overlay mb-4">
+              <p className="text-center text-subtle">No alerts found. Use the webhook simulator below to create some test alerts.</p>
+            </div>
+          ) : (
+            <AlertTable alerts={alerts} />
+          )}
+          
           <WebhookSimulator onNewAlert={handleNewAlert} />
-          <AlertTable alerts={alerts} />
         </main>
 
         <footer className="text-center mt-12 text-subtle text-xs">
