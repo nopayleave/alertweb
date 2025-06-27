@@ -9,6 +9,11 @@ Your webhook URL is automatically displayed in the application. It will look som
 https://your-vercel-deployment-url.vercel.app/api/webhook
 ```
 
+For example, if your app is deployed at `alertweb-alpha.vercel.app`, your webhook URL would be:
+```
+https://alertweb-alpha.vercel.app/api/webhook
+```
+
 You can copy this URL directly from the application interface.
 
 ## Step 2: Create an Alert in TradingView
@@ -87,6 +92,14 @@ Your Pine Script sends two types of alerts:
 ## Testing Your Webhook
 
 You can use the built-in Webhook Simulator in the application to test how alerts will appear without waiting for actual TradingView alerts to trigger.
+
+You can also test your webhook endpoint directly using the following curl command:
+
+```bash
+curl -X POST https://your-vercel-deployment-url.vercel.app/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"symbol": "BTCUSD", "signal": "Bullish", "condition": "HA > 0", "price": 68500.25, "time": "1234567890"}'
+```
 
 ## Troubleshooting
 
