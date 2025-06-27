@@ -1,0 +1,5 @@
+{
+  "name": "TradingView Live Alerts",
+  "description": "A web application to display live trading alerts from a TradingView webhook in a real-time table. Includes a simulator to demonstrate functionality without a backend.",
+  "requestFramePermissions": []
+}

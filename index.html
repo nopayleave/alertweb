@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradingView Live Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'base': '#131722',
+              'surface': '#1e222d',
+              'overlay': '#2a2e39',
+              'muted': '#888ea8',
+              'subtle': '#6a6f8f',
+              'primary': '#2962ff',
+              'primary-hover': '#1e4acb',
+              'positive': '#26a69a',
+              'negative': '#ef5350',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @keyframes highlight-row {
+        from { background-color: rgba(41, 98, 255, 0.25); }
+        to { background-color: transparent; }
+      }
+      .row-highlight {
+        animation: highlight-row 1.5s ease-out;
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-base text-muted antialiased">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
