@@ -23,15 +23,44 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Webhook request received');
+    
     // Parse the incoming webhook data
     const alertData = req.body;
     
     // Log the received data (for debugging)
-    console.log('Received TradingView alert:', alertData);
+    console.log('Received TradingView alert:', JSON.stringify(alertData, null, 2));
+    
+    // Validate required fields
+    if (!alertData.symbol) {
+      console.error('Missing required field: symbol');
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required field: symbol' 
+      });
+    }
+    
+    if (!alertData.price) {
+      console.error('Missing required field: price');
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required field: price' 
+      });
+    }
+    
+    if (!alertData.signal) {
+      console.error('Missing required field: signal');
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required field: signal' 
+      });
+    }
     
     // Process the TradingView alert data
     // Format from the Pine Script:
     // {"symbol": "BTCUSD", "signal": "Bullish", "condition": "HA > 0", "price": 68500.25, "time": "1234567890"}
+    
+    console.log('Processing alert data...');
     
     // Convert the alert data to our application format
     const processedAlert = {
@@ -42,8 +71,13 @@ export default async function handler(req, res) {
       message: alertData.condition || '',
     };
     
+    console.log('Processed alert:', JSON.stringify(processedAlert, null, 2));
+    console.log('Storing alert in Firebase...');
+    
     // Store the alert in Firebase
     const savedAlert = await addAlert(processedAlert);
+    
+    console.log('Alert stored successfully:', JSON.stringify(savedAlert, null, 2));
     
     // Send a successful response back to TradingView
     return res.status(200).json({ 
@@ -53,9 +87,13 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error processing webhook:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to process webhook' 
+      error: 'Failed to process webhook',
+      errorDetails: error.message
     });
   }
 } 
