@@ -1,7 +1,14 @@
 // Test script to check Firebase connectivity via the API
 // Run with: node test-api-firebase.js [url]
+// Examples:
+// - Local: node test-api-firebase.js http://localhost:5174/api/test
+// - Vercel: node test-api-firebase.js https://your-vercel-app.vercel.app/api/test
 
+// Default to local if no URL provided
 const url = process.argv[2] || 'http://localhost:5174/api/test';
+const isLocal = url.includes('localhost');
+
+console.log(`Testing Firebase via API on ${isLocal ? 'LOCAL' : 'PRODUCTION'} environment`);
 
 async function testApiFirebase() {
   console.log(`Testing Firebase connectivity via API at: ${url}`);
@@ -38,6 +45,12 @@ async function testApiFirebase() {
     }
   } catch (error) {
     console.error('❌ Error testing Firebase connectivity:', error);
+    console.error('\nPossible issues:');
+    console.error('1. API server is not running (if testing locally)');
+    console.error('2. Vercel deployment is not complete or has errors');
+    console.error('3. Firebase configuration is incorrect in the environment');
+    console.error('4. Network connectivity issues');
+    console.error('5. Firebase security rules are preventing access');
   }
 }
 

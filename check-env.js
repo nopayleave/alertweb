@@ -1,4 +1,9 @@
 // Script to check environment variables
+import dotenv from 'dotenv';
+
+// Load environment variables from .env.local
+dotenv.config({ path: '.env.local' });
+
 console.log('Checking environment variables...');
 
 // Check Firebase config
@@ -13,8 +18,8 @@ console.log('FIREBASE_MEASUREMENT_ID:', process.env.FIREBASE_MEASUREMENT_ID ? 'S
 
 // Check Node environment
 console.log('\nNode environment:');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('VERCEL_ENV:', process.env.VERCEL_ENV);
+console.log('NODE_ENV:', process.env.NODE_ENV || 'undefined');
+console.log('VERCEL_ENV:', process.env.VERCEL_ENV || 'undefined');
 console.log('VERCEL:', process.env.VERCEL ? 'Running on Vercel' : 'Not running on Vercel');
 
 console.log('\nCheck complete!'); 
