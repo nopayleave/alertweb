@@ -1,6 +1,4 @@
 import { Alert, AlertAction } from '../types';
-import { collection, getDocs, query, orderBy, limit, Firestore } from 'firebase/firestore';
-import { db } from '../firebase/config.js';
 
 // Declare the ImportMeta interface
 declare global {
@@ -20,51 +18,64 @@ export async function fetchAlerts(): Promise<{alerts: Alert[], isSampleData: boo
     const isDev = import.meta.env.DEV;
     
     if (isDev) {
-      // In development, fetch directly from Firebase
-      console.log('Fetching alerts directly from Firebase (development mode)');
-      const alertsQuery = query(
-        collection(db as Firestore, 'alerts'),
-        orderBy('timestamp', 'desc'),
-        limit(100)
-      );
+      // In development, always return sample data since we don't have a backend server
+      console.log('Development mode: returning sample data');
       
-      const querySnapshot = await getDocs(alertsQuery);
+      const sampleAlerts: Alert[] = [
+        {
+          id: 'sample-1',
+          ticker: 'BTCUSD',
+          price: 68500.25,
+          action: AlertAction.BUY,
+          timestamp: new Date(),
+          message: 'HA > 0'
+        },
+        {
+          id: 'sample-2',
+          ticker: 'ETHUSD',
+          price: 3650.45,
+          action: AlertAction.SELL,
+          timestamp: new Date(Date.now() - 60000 * 5),
+          message: 'HA < 0'
+        },
+        {
+          id: 'sample-3',
+          ticker: 'AAPL',
+          price: 185.25,
+          action: AlertAction.BUY,
+          timestamp: new Date(Date.now() - 60000 * 10),
+          message: 'Breakout above resistance'
+        }
+      ];
       
-      if (querySnapshot.empty) {
-        console.log('No alerts found in Firebase');
-        return {
-          alerts: [],
-          isSampleData: true
-        };
-      }
-      
-      const alerts = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ticker: data.ticker || 'UNKNOWN',
-          price: data.price || 0,
-          action: data.action === 'BUY' ? AlertAction.BUY : AlertAction.SELL,
-          timestamp: data.timestamp?.toDate() || new Date(),
-          message: data.message || '',
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
-        };
-      });
-      
-      console.log(`Fetched ${alerts.length} alerts from Firebase`);
       return {
-        alerts,
-        isSampleData: false
+        alerts: sampleAlerts,
+        isSampleData: true
       };
     } else {
       // In production, use the API endpoint
       console.log('Fetching alerts from API endpoint');
       const response = await fetch('/api/alerts');
+      
+      if (!response.ok) {
+        console.error(`API request failed with status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
       if (!data.success) {
-        throw new Error('Failed to fetch alerts');
+        console.error('API returned unsuccessful response:', data);
+        throw new Error(data.error || 'Failed to fetch alerts');
+      }
+      
+      // Log any warnings from the API
+      if (data.error) {
+        console.warn('API warning:', data.error);
+      }
+      
+      if (data.message) {
+        console.log('API message:', data.message);
       }
       
       const alerts = data.data.map((alert: any) => ({
@@ -84,8 +95,21 @@ export async function fetchAlerts(): Promise<{alerts: Alert[], isSampleData: boo
     }
   } catch (error) {
     console.error('Error fetching alerts:', error);
+    
+    // Return sample data as fallback
+    const fallbackAlerts: Alert[] = [
+      {
+        id: 'fallback-1',
+        ticker: 'BTCUSD',
+        price: 68500.25,
+        action: AlertAction.BUY,
+        timestamp: new Date(),
+        message: 'Sample data (connection failed)'
+      }
+    ];
+    
     return {
-      alerts: [],
+      alerts: fallbackAlerts,
       isSampleData: true
     };
   }

@@ -23,17 +23,6 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      },
-      // Only use proxy in development mode
-      server: isProd ? {} : {
-        proxy: {
-          // Proxy API requests to the API endpoints
-          '/api': {
-            target: 'http://localhost:5174',
-            changeOrigin: true,
-            rewrite: (path) => path,
-          }
-        }
       }
     };
 });
