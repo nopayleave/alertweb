@@ -9,7 +9,14 @@
     "preview": "vite preview",
     "vercel-build": "node check-env.js && vite build",
     "setup-firebase": "node setup-firebase.js",
-    "check-env": "node check-env.js"
+    "check-env": "node check-env.js",
+    "test-firebase": "node test-firebase.js",
+    "test-firebase-admin": "node test-firebase-admin.js",
+    "test-webhook": "node test-api-webhook.js",
+    "test-webhook-prod": "node test-api-webhook.js https://alertweb-alpha.vercel.app/api/webhook",
+    "test-api": "node test-api-firebase.js",
+    "test-api-prod": "node test-api-firebase.js https://alertweb-alpha.vercel.app/api/test",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.6.0",
@@ -29,6 +36,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "typescript": "~5.7.2"
+    "typescript": "~5.7.2",
+    "vercel": "^33.7.1"
   }
 }

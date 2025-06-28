@@ -1,7 +1,7 @@
 // Test script to check Firebase Admin SDK connection
 // Run with: node test-firebase-admin.js
 
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import fs from 'fs';
 import dotenv from 'dotenv';
 
