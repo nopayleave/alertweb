@@ -1,5 +1,5 @@
 // This is a serverless function that will handle incoming webhook requests from TradingView
-import { addAlert } from '../../firebase/alerts';
+import { addAlert } from '../../firebase/admin-alerts';
 
 // Vercel serverless function handler
 export default async function handler(req, res) {
@@ -30,6 +30,10 @@ export default async function handler(req, res) {
     
     // Log the received data (for debugging)
     console.log('Received TradingView alert:', JSON.stringify(alertData, null, 2));
+    console.log('Environment variables check:');
+    console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'Set' : 'Not set');
+    console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'Set' : 'Not set');
+    console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'Set (length: ' + process.env.FIREBASE_PRIVATE_KEY.length + ')' : 'Not set');
     
     // Validate required fields
     if (!alertData.symbol) {

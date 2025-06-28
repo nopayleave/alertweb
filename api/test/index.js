@@ -1,6 +1,5 @@
 // API endpoint to test Firebase connectivity
-import { db } from '../../firebase/config';
-import { collection, addDoc, getDocs, query, limit } from 'firebase/firestore';
+import { adminDb } from '../../firebase/admin-config';
 
 // Vercel serverless function handler
 export default async function handler(req, res) {
@@ -25,11 +24,14 @@ export default async function handler(req, res) {
 
   try {
     console.log('Testing Firebase connectivity...');
+    console.log('Environment variables check:');
+    console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID ? 'Set' : 'Not set');
+    console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'Set' : 'Not set');
+    console.log('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'Set (length: ' + process.env.FIREBASE_PRIVATE_KEY.length + ')' : 'Not set');
     
     // Try to read from the alerts collection
     console.log('Attempting to read from alerts collection...');
-    const alertsQuery = query(collection(db, 'alerts'), limit(1));
-    const querySnapshot = await getDocs(alertsQuery);
+    const querySnapshot = await adminDb.collection('alerts').limit(1).get();
     
     console.log(`Successfully read ${querySnapshot.size} documents from alerts collection`);
     
@@ -44,7 +46,7 @@ export default async function handler(req, res) {
       isTest: true
     };
     
-    const docRef = await addDoc(collection(db, 'alerts'), testDoc);
+    const docRef = await adminDb.collection('alerts').add(testDoc);
     console.log('Successfully wrote test document with ID:', docRef.id);
     
     // Return success response
@@ -55,7 +57,8 @@ export default async function handler(req, res) {
       writeId: docRef.id,
       firebaseConfig: {
         projectId: process.env.FIREBASE_PROJECT_ID || 'default-project-id',
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'default-storage-bucket'
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL ? 'Set' : 'Not set',
+        privateKey: process.env.FIREBASE_PRIVATE_KEY ? 'Set' : 'Not set'
       }
     });
   } catch (error) {
@@ -69,7 +72,8 @@ export default async function handler(req, res) {
       errorDetails: error.message,
       firebaseConfig: {
         projectId: process.env.FIREBASE_PROJECT_ID || 'default-project-id',
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || 'default-storage-bucket'
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL ? 'Set' : 'Not set',
+        privateKey: process.env.FIREBASE_PRIVATE_KEY ? 'Set' : 'Not set'
       }
     });
   }
