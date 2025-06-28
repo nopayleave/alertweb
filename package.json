@@ -16,6 +16,8 @@
     "test-webhook-prod": "node test-api-webhook.js https://alertweb-alpha.vercel.app/api/webhook",
     "test-api": "node test-api-firebase.js",
     "test-api-prod": "node test-api-firebase.js https://alertweb-alpha.vercel.app/api/test",
+    "test-env": "node test-env-check.js",
+    "test-env-prod": "node test-env-check.js https://alertweb-alpha.vercel.app/api/env-check",
     "deploy": "vercel --prod"
   },
   "dependencies": {
